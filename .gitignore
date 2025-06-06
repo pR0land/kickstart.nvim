@@ -4,3 +4,7 @@ test.sh
 nvim
 
 spell/
+
+lua/pR0land/BackgroundImages/*
+!lua/pR0land/BackgroundImages/.gitkeep
+
