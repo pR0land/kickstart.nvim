@@ -5,8 +5,11 @@
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
+-- Open directory in vim
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+-- Save the file when pressend ctrl-s shortcut
+vim.keymap.set('n', '<C-s>', vim.cmd.w, { desc = '[S]ave file' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
