@@ -68,3 +68,5 @@ vim.opt.termguicolors = true
 -- add undo files for undotree¨
 -- vim.opt.swapfile = false
 -- vim.opt.backup = false
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
