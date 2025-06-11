@@ -17,10 +17,12 @@ return {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      { 'mason-org/mason.nvim', opts = {} },
+      { 'mason-org/mason.nvim', opts = {
+        registries = { 'github:crashdummyy/mason-registry', 'github:mason-org/mason-registry' },
+      } },
       'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
+      'seblyng/roslyn.nvim',
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
 
@@ -217,8 +219,8 @@ return {
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
-
-        csharp_ls = {},
+        -- roslyn = {},
+        -- csharp_ls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -251,16 +253,18 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'roslyn',
+        'lua_ls',
+        'ts_ls',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
       require('mason-lspconfig').setup {
         ensure_installed = {
-          'lua_ls',
-          'ts_ls',
           -- 'omnisharp',
-          'csharp_ls',
-        }, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+          -- 'csharp_ls',
+          -- 'roslyn',
+        },
+        -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
         handlers = {
           function(server_name)
@@ -273,6 +277,7 @@ return {
           end,
         },
       }
+      require('roslyn').setup()
     end,
   },
 }
