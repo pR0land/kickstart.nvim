@@ -5,8 +5,8 @@ return {
   -- install jsregexp (optional!).
   build = 'make install_jsregexp',
   config = function()
-    -- require('luasnip.loaders.from_lua').lazy_load { paths = '../luasnips/unitysnips.lua' }
-    local ls = require 'luasnip'
+    require('luasnip.loaders.from_lua').lazy_load { paths = vim.fn.stdpath 'config' .. '/lua/pR0land/luasnips' }
+    -- local ls = require 'luasnip'
     -- require 'luasnip' {
     --   snip_env = {
     --     s = function(...)

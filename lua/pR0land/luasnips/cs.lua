@@ -1,8 +1,6 @@
 local ls = require 'luasnip'
 -- snips for unity taken from: https://github.com/apyra/nvim-unity/tree/master?tab=readme-ov-file
-
 local s, t, i = ls.snippet, ls.text_node, ls.insert_node
-
 return {
   s('start', { t 'void Start() {', t { '', '    ' }, i(1), t { '', '}' } }),
   s('update', { t 'void Update() {', t { '', '    ' }, i(1), t { '', '}' } }),
