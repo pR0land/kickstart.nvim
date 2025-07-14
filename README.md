@@ -1,5 +1,30 @@
-# kickstart.nvim
+# pR0land.nvim
+This is my take and rebuild of the kikstart neovim projekt.
+The point of this project is to make neovim easy for me to take along and install on a new pc and thereby have my editor with me everywhere. I've therefore made a batch file to install all my dependencies and neovim for me, so Ionly have to clone the repo down and run the batfile and then I'm good to go.
+I've made the project modular as this is the main way i code, and therefore i prefer each section to be seperate.
+Currently the bulk of my work is done using Unity (C#) and React (Typescript) this project is therefore setup for these development senarios.
 
+If you want to work in Unity, you do have to install Unity and VS code to make the proper csproj files for lsp to work. 
+## Installation follows the following steps:
+#### Clone kickstart.nvim
+
+If you're using `cmd.exe`:
+
+```
+git clone https://github.com/pR0land/kickstart.nvim.git "%localappdata%\nvim"
+```
+
+If you're using `powershell.exe`
+
+```
+git clone https://github.com/pR0land/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
+```
+
+Once you have cloned the repo, run the batch called 'installDependencies.bat' file with adminstrator priviliges.
+The file is located in 'AppData/Local/nvim'
+Then open neovim using 'nvim'
+
+<details><summary> Original kikstart readme documentation </summary>
 ## Introduction
 
 A starting point for Neovim that is:
@@ -158,19 +183,6 @@ After installing all the dependencies continue with the [Install Kickstart](#Ins
 
 #### Windows Installation
 
-<details><summary>Windows with Microsoft C++ Build Tools and CMake</summary>
-Installation may require installing build tools and updating the run command for `telescope-fzf-native`
-
-See `telescope-fzf-native` documentation for [more details](https://github.com/nvim-telescope/telescope-fzf-native.nvim#installation)
-
-This requires:
-
-- Install CMake and the Microsoft C++ Build Tools on Windows
-
-```lua
-{'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
-```
-</details>
 <details><summary>Windows with gcc/make using chocolatey</summary>
 Alternatively, one can install gcc and make which don't require changing the config,
 the easiest way is to use choco:
@@ -239,3 +251,4 @@ sudo pacman -S --noconfirm --needed gcc make git ripgrep fd unzip neovim
 ```
 </details>
 
+</details>
