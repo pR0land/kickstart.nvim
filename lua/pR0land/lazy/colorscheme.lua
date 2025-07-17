@@ -29,6 +29,7 @@ return { -- You can easily change to a different colorscheme.
     -- directly inside the plugin declaration.
     vim.g.gruvbox_material_enable_italic = true
     vim.g.gruvbox_material_cursor = 'red'
+    vim.g.gruvbox_material_background = 'soft'
     vim.cmd.colorscheme 'gruvbox-material'
   end,
 }
