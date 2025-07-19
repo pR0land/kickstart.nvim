@@ -19,9 +19,10 @@ return {
           vim.cmd.Git 'push'
         end, { buffer = bufnr, remap = false, desc = ' [g]it [p]ush' })
 
+        --TODO: Something wrong with the Git Command
         -- rebase always
         vim.keymap.set('n', '<leader>gP', function()
-          vim.cmd.Git { 'pull', '--rebase' }
+          vim.cmd.Git 'pull --rebase'
         end, { buffer = bufnr, remap = false, desc = ' [g]it [P]ull' })
 
         -- NOTE: It allows me to easily set the branch i am pushing and any tracking
