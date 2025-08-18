@@ -6,7 +6,7 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 -- Open directory in vim
-vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew' })
+vim.keymap.set('n', '<leader>pv', vim.cmd.Oil, { desc = '[P]roject [V]iew' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Save the file when pressend ctrl-s shortcut
 vim.keymap.set('n', '<C-s>', vim.cmd.w, { desc = '[S]ave file' })
