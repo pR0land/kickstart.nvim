@@ -21,15 +21,28 @@ return { -- You can easily change to a different colorscheme.
   --     vim.cmd.colorscheme 'tokyonight-night'
   --   end,
 
-  'sainnhe/gruvbox-material',
-  lazy = false,
-  priority = 1000,
+  -- 'sainnhe/gruvbox-material',
+  -- lazy = false,
+  -- priority = 1000,
+  -- config = function()
+  --   -- Optionally configure and load the colorscheme
+  --   -- directly inside the plugin declaration.
+  --   vim.g.gruvbox_material_enable_italic = true
+  --   vim.g.gruvbox_material_cursor = 'red'
+  --   vim.g.gruvbox_material_background = 'soft'
+  --   vim.cmd.colorscheme 'gruvbox-material'
+  -- end,
+
+  'ellisonleao/gruvbox.nvim',
+  priority = 1000, -- load before other UI plugins
   config = function()
-    -- Optionally configure and load the colorscheme
-    -- directly inside the plugin declaration.
-    vim.g.gruvbox_material_enable_italic = true
-    vim.g.gruvbox_material_cursor = 'red'
-    vim.g.gruvbox_material_background = 'soft'
-    vim.cmd.colorscheme 'gruvbox-material'
+    require('gruvbox').setup {
+      -- change to this when contrast gets debricaded
+      -- gruvbox_contrast_dark = 'soft',
+      -- gruvbox_contrast_light = 'soft',
+      contrast = 'soft',
+      transparent_mode = false,
+    }
+    vim.cmd 'colorscheme gruvbox'
   end,
 }
