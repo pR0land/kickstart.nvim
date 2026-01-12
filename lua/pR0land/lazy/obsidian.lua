@@ -1,3 +1,4 @@
+local md = require 'utils.markdown'
 return {
   'pR0land/obsidian.nvim',
   version = '*', -- recommended, use latest release instead of latest commit
@@ -34,6 +35,13 @@ return {
       },
     },
 
+    note_id_func = function(title)
+      if not title then
+        return tostring(os.time())
+      end
+      return title:lower():gsub('%s+', '-'):gsub('[^a-z0-9-]', '')
+    end,
+
     ui = {
       enable = false,
     },
@@ -69,9 +77,9 @@ return {
       date_format = '%d-%m-%Y',
       time_format = nil,
       substitutions = {
-        CurrentWEEK = function()
-          return os.date '%Y-W%V'
-        end,
+        CurrentWEEK = md.CurrentWEEK(0),
+        CurrentMONTH = md.CurrentMONTH(0),
+        CurrentQUARTER = md.CurrentQUARTER(0),
       },
 
       ---@class obsidian.config.CustomTemplateOpts
@@ -81,12 +89,58 @@ return {
       customizations = {
         WeeklyReviewTemplate = {
           notes_subdir = 'Pipelines/CycleAndReviews/Uger',
+          note_id_func = function(current)
+            local filename, _ = md.weekly_note(current)
+            return filename
+          end,
+          note_title_func = function(current)
+            local _, title = md.weekly_note(current)
+            return title
+          end,
         },
+
         MonthlyReviewTemplate = {
           notes_subdir = 'Pipelines/CycleAndReviews/Måneder',
+          note_id_func = function(current)
+            local filename, _ = md.monthly_note(current)
+            return filename
+          end,
+          note_title_func = function(current)
+            local _, title = md.monthly_note(current)
+            return title
+          end,
         },
+
         QuarterlyReviewTemplate = {
           notes_subdir = 'Pipelines/CycleAndReviews/Kvartaler',
+          note_id_func = function(current)
+            local filename, _ = md.quarterly_note(current)
+            return filename
+          end,
+          note_title_func = function(current)
+            local _, title = md.quarterly_note(current)
+            return title
+          end,
+        },
+
+        AccomplishmentTemplate = {
+          notes_subdir = 'Pipelines/CycleAndReviews/Accomplishments',
+          note_id_func = function(title)
+            if not title then
+              return tostring(os.time())
+            end
+            return title:lower():gsub('%s+', '-'):gsub('[^a-z0-9-]', '')
+          end,
+        },
+
+        DisappointmentTemplate = {
+          notes_subdir = 'Pipelines/CycleAndReviews/Disappointments',
+          note_id_func = function(title)
+            if not title then
+              return tostring(os.time())
+            end
+            return title:lower():gsub('%s+', '-'):gsub('[^a-z0-9-]', '')
+          end,
         },
       },
     },
@@ -142,11 +196,24 @@ return {
       end,
     })
 
-    vim.keymap.set('n', '<Leader>ob', function()
+    vim.keymap.set('n', '<Leader>os', ':Obsidian search<CR>', { desc = '[o]bsidian [s]earch file' })
+    vim.keymap.set('n', '<Leader>od', ':Obsidian today<CR>', { desc = '[o]bsidian [d]aily note' })
+    vim.keymap.set('n', '<Leader>nn', ':Obsidian new<CR>', { desc = '[n]ew [n]ote in obsidian' })
+    vim.keymap.set('n', '<Leader>onw', ':Obsidian new_from_template WeeklyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [w]eekly Review' })
+    vim.keymap.set('n', '<Leader>onm', ':Obsidian new_from_template MonthlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [m]onthly Review' })
+    vim.keymap.set('n', '<Leader>onq', ':Obsidian new_from_template QuarterlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [q]uarterly Review' })
+    vim.keymap.set('n', '<Leader>ont', ':Obsidian new_from_template<CR>', { desc = '[o]bsidian [n]ew from [t]emplate' })
+    vim.keymap.set('n', '<Leader>ona', function()
+      md.obsidian_new_named 'AccomplishmentTemplate'
+    end, { desc = '[o]bsidian [n]ew [a]ccomplishment ' })
+    vim.keymap.set('n', '<Leader>ond', function()
+      md.obsidian_new_named 'DisappointmentTemplate'
+    end, { desc = '[o]bsidian [n]ew [d]isappointment' })
+
+    vim.keymap.set('n', '<Leader>or', function()
       local api = require 'obsidian.api'
       local util = require 'obsidian.util'
       local picker = require 'obsidian.picker'
-      local md = require 'utils.markdown'
 
       -- 1. Heading above cursor
       local heading = md.get_heading_above()
@@ -197,6 +264,6 @@ return {
       picker.pick(items, {
         prompt_title = 'Backlinks → #' .. heading,
       })
-    end, { desc = '[o]bsidian [b]acklinks for header' })
+    end, { desc = '[o]bsidian [r]eview for header' })
   end,
 }
