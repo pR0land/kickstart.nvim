@@ -187,18 +187,24 @@ return {
     -- 1. Initialize the plugin
     require('obsidian').setup(opts)
 
+    local tasks = require 'custom.plugins.tasks'
     -- 2. Restore the Smart Action Autocmd
     vim.api.nvim_create_autocmd('User', {
       pattern = 'ObsidianNoteEnter',
       callback = function(ev)
         pcall(vim.keymap.del, 'n', '<CR>', { buffer = true })
         vim.keymap.set('n', '<leader><CR>', require('obsidian.api').smart_action, { buffer = true })
+        vim.keymap.set('n', '<leader>otp', tasks.pull_today, { desc = '[o]bsidian [t]ask [p]ull' })
+        vim.keymap.set('n', '<leader>otP', tasks.push_completed, { desc = '[o]bsidian [t]ask [P]ush' })
+        vim.keymap.set('n', '<leader>ott', tasks.pull_tomorrow, { desc = '[o]bsidian [t]task [t]omorrow' })
+        vim.keymap.set('n', '<leader>otr', tasks.push_priorities, { desc = '[o]bsidian [t]ask [r]eorder' })
       end,
     })
 
     vim.keymap.set('n', '<Leader>os', ':Obsidian search<CR>', { desc = '[o]bsidian [s]earch file' })
     vim.keymap.set('n', '<Leader>od', ':Obsidian today<CR>', { desc = '[o]bsidian [d]aily note' })
     vim.keymap.set('n', '<Leader>nn', ':Obsidian new<CR>', { desc = '[n]ew [n]ote in obsidian' })
+    vim.keymap.set('n', '<Leader>na', ':Obsidian new_from_template ActionItemTemplate<CR>', { desc = '[n]ew [a]ction item' })
     vim.keymap.set('n', '<Leader>onw', ':Obsidian new_from_template WeeklyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [w]eekly Review' })
     vim.keymap.set('n', '<Leader>onm', ':Obsidian new_from_template MonthlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [m]onthly Review' })
     vim.keymap.set('n', '<Leader>onq', ':Obsidian new_from_template QuarterlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [q]uarterly Review' })
