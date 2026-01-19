@@ -31,6 +31,8 @@ local function setup_highlights()
   vim.api.nvim_set_hl(0, 'ObsidianWeekendHeader', { link = 'RenderMarkdownH4Bg', bold = true })
   vim.api.nvim_set_hl(0, 'ObsidianDate', { link = 'Comment' })
   vim.api.nvim_set_hl(0, 'ObsidianActiveSection', { link = 'RenderMarkdownH3Bg', bold = true })
+  -- New highlight group for Today's text
+  vim.api.nvim_set_hl(0, 'ObsidianTodayText', { link = 'markdownUrl', bold = true })
 end
 
 -- ----------------------------
@@ -42,29 +44,21 @@ local function week_start(ts)
   return ts - delta * 86400
 end
 
-local function build_forward_weeks(items_by_date, num_weeks)
-  num_weeks = num_weeks or 52
-  local today_ts = os.time { year = os.date '%Y', month = os.date '%m', day = os.date '%d' }
-  local start_week = week_start(today_ts)
-  local weeks, week_map = {}, {}
-  for i = 0, num_weeks - 1 do
-    local ws = start_week + i * 7 * 86400
-    weeks[#weeks + 1] = ws
-    week_map[ws] = {}
-    for d = 0, 6 do
-      local ts = ws + d * 86400
-      week_map[ws][ts] = items_by_date[ts] or {}
-    end
-  end
-  return weeks, week_map
+local function to_date_string(ts)
+  return os.date('%Y-%m-%d', ts)
 end
 
+-- ----------------------------
+-- Data Loading
+-- ----------------------------
 local function load_action_items()
   local dir = utils.action_items_dir()
   if not dir then
     return {}
   end
-  local items_by_date = {}
+
+  local items_by_date_str = {}
+
   for _, path in ipairs(vim.fn.glob(dir .. '/*.md', false, true)) do
     local note = utils.get_existing_note(path) or Note.from_file(path)
     if note then
@@ -72,24 +66,49 @@ local function load_action_items()
       if fm.Status == false and fm.Do_Date and fm.Do_Date ~= '' then
         local ts = utils.parse_date(fm.Do_Date)
         if ts then
-          items_by_date[ts] = items_by_date[ts] or {}
-          table.insert(items_by_date[ts], note)
+          local key = to_date_string(ts)
+          items_by_date_str[key] = items_by_date_str[key] or {}
+          table.insert(items_by_date_str[key], note)
         end
       end
     end
   end
-  return items_by_date
+  return items_by_date_str
+end
+
+local function build_forward_weeks(items_by_date_str, num_weeks)
+  num_weeks = num_weeks or 52
+  local today_ts = os.time { year = os.date '%Y', month = os.date '%m', day = os.date '%d' }
+  local start_week = week_start(today_ts)
+  local weeks, week_map = {}, {}
+
+  for i = 0, num_weeks - 1 do
+    local ws = start_week + i * 7 * 86400
+    weeks[#weeks + 1] = ws
+    week_map[ws] = {}
+
+    for d = 0, 6 do
+      local day_ts = ws + d * 86400
+      local day_key = to_date_string(day_ts)
+      week_map[ws][day_ts] = items_by_date_str[day_key] or {}
+    end
+  end
+  return weeks, week_map
 end
 
 -- ----------------------------
--- Render week (Updated for Full Width Headers)
+-- Render week
 -- ----------------------------
 local function render_week(buf, week_start_ts, week_data, sections)
   vim.api.nvim_buf_clear_namespace(buf, ns_static, 0, -1)
+  local today_str = os.date '%Y-%m-%d'
 
   local line = 1
   for i = 0, 6 do
     local ts = week_start_ts + i * 86400
+    local day_str = to_date_string(ts)
+    local is_today = (day_str == today_str)
+
     local wday = os.date('%A', ts)
     local is_weekend = os.date('%w', ts) == '0' or os.date('%w', ts) == '6'
     local icon = is_weekend and ICON_WEEKEND or ICON_WEEKDAY
@@ -98,17 +117,25 @@ local function render_week(buf, week_start_ts, week_data, sections)
     vim.api.nvim_buf_set_lines(buf, -1, -1, false, { header })
 
     local start_line = line
-    local hl_group = is_weekend and 'ObsidianWeekendHeader' or 'ObsidianWeekdayHeader'
+    local bg_hl_group = is_weekend and 'ObsidianWeekendHeader' or 'ObsidianWeekdayHeader'
 
+    -- Apply the background to the full line
     vim.api.nvim_buf_set_extmark(buf, ns_static, line, 0, {
-      line_hl_group = hl_group,
+      line_hl_group = bg_hl_group,
       hl_eol = true,
-      priority = 10, -- Base priority
+      priority = 10,
     })
 
-    local date_col = header:find '%('
-    if date_col then
-      vim.api.nvim_buf_add_highlight(buf, ns_static, 'ObsidianDate', line, date_col - 1, -1)
+    -- Apply text color
+    if is_today then
+      -- If today, color the entire header text with ObsidianTodayText
+      vim.api.nvim_buf_add_highlight(buf, ns_static, 'ObsidianTodayText', line, 0, -1)
+    else
+      -- If not today, use the standard comment style for the date part
+      local date_col = header:find '%('
+      if date_col then
+        vim.api.nvim_buf_add_highlight(buf, ns_static, 'ObsidianDate', line, date_col - 1, -1)
+      end
     end
 
     line = line + 1
@@ -125,13 +152,12 @@ local function render_week(buf, week_start_ts, week_data, sections)
 end
 
 -- ----------------------------
--- Update Active Selection & Sticky Header
+-- Update Active Selection
 -- ----------------------------
 local function update_week_header()
   local cursor = vim.api.nvim_win_get_cursor(state.win)
   local cursor_line = cursor[1] - 1
 
-  -- Prevent cursor on sticky header row
   if cursor[1] == 1 then
     vim.api.nvim_win_set_cursor(state.win, { 2, 0 })
     return
@@ -146,7 +172,6 @@ local function update_week_header()
     end
   end
 
-  -- 1. Selection Highlight (Full Width)
   vim.api.nvim_buf_clear_namespace(state.buf, ns_active, 0, -1)
   if current_s then
     for l = current_s.start, current_s['end'] do
@@ -158,7 +183,6 @@ local function update_week_header()
     end
   end
 
-  -- 2. Sticky Week Header (FULL WIDTH VIRTUAL LINE)
   if current_s then
     local ws = week_start(current_s.ts)
     if ws ~= state.current_week_header then
@@ -175,9 +199,7 @@ local function update_week_header()
           },
         },
         virt_text_pos = 'overlay',
-        -- This ensures the background color fills the whole top line
         line_hl_group = 'ObsidianWeekHeader',
-        hl_mode = 'combine',
         priority = 300,
       })
     end
@@ -228,9 +250,15 @@ local function choose_date()
   if not s or not state.target_note then
     return
   end
-  state.target_note:set('Do_Date', utils.fmt_date_yyyymmdd(s.ts))
-  state.target_note:save()
+
+  local date_val = utils.fmt_date_yyyymmdd(s.ts)
+  local note_path = tostring(state.target_note.path)
+
+  utils.update_frontmatter_file(note_path, { Do_Date = date_val })
+
   vim.api.nvim_win_close(state.win, true)
+  vim.cmd 'checktime'
+  vim.notify('Scheduled: ' .. date_val, vim.log.levels.INFO)
 end
 
 -- ----------------------------
@@ -238,19 +266,21 @@ end
 -- ----------------------------
 function M.open()
   setup_highlights()
+  state.current_week_header = nil
 
   local buf_name = vim.api.nvim_buf_get_name(0)
   if buf_name == '' then
     return
   end
+
   local note = utils.get_existing_note(buf_name) or Note.from_file(buf_name)
   if not note then
     return
   end
   state.target_note = note
 
-  local items_by_date = load_action_items()
-  local weeks, week_map = build_forward_weeks(items_by_date, 52)
+  local items_by_date_str = load_action_items()
+  local weeks, week_map = build_forward_weeks(items_by_date_str, 52)
   state.weeks = weeks
   state.week_map = week_map
 
