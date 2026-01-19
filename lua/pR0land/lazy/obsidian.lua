@@ -200,7 +200,7 @@ return {
     -- 1. Initialize the plugin
     require('obsidian').setup(opts)
 
-    local tasks = require 'custom.plugins.tasks'
+    local tasks = require 'custom.plugins.obsidian.tasks'
     -- 2. Restore the Smart Action Autocmd
     vim.api.nvim_create_autocmd('User', {
       pattern = 'ObsidianNoteEnter',
