@@ -123,13 +123,26 @@ return {
           end,
         },
 
+        ActionItemTemplate = {
+          notes_subdir = 'Pipelines/ActionItems',
+          note_title_func = function(title)
+            return title
+          end,
+          note_id_func = function(title)
+            if not title then
+              return tostring(os.time())
+            end
+            return title
+          end,
+        },
+
         AccomplishmentTemplate = {
           notes_subdir = 'Pipelines/CycleAndReviews/Accomplishments',
           note_id_func = function(title)
             if not title then
               return tostring(os.time())
             end
-            return title:lower():gsub('%s+', '-'):gsub('[^a-z0-9-]', '')
+            return title
           end,
         },
 
@@ -139,7 +152,7 @@ return {
             if not title then
               return tostring(os.time())
             end
-            return title:lower():gsub('%s+', '-'):gsub('[^a-z0-9-]', '')
+            return title
           end,
         },
       },
@@ -204,7 +217,9 @@ return {
     vim.keymap.set('n', '<Leader>os', ':Obsidian search<CR>', { desc = '[o]bsidian [s]earch file' })
     vim.keymap.set('n', '<Leader>od', ':Obsidian today<CR>', { desc = '[o]bsidian [d]aily note' })
     vim.keymap.set('n', '<Leader>nn', ':Obsidian new<CR>', { desc = '[n]ew [n]ote in obsidian' })
-    vim.keymap.set('n', '<Leader>na', ':Obsidian new_from_template ActionItemTemplate<CR>', { desc = '[n]ew [a]ction item' })
+    vim.keymap.set('n', '<Leader>na', function()
+      md.obsidian_new_named 'ActionItemTemplate'
+    end, { desc = '[n]ew [a]ction item' })
     vim.keymap.set('n', '<Leader>onw', ':Obsidian new_from_template WeeklyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [w]eekly Review' })
     vim.keymap.set('n', '<Leader>onm', ':Obsidian new_from_template MonthlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [m]onthly Review' })
     vim.keymap.set('n', '<Leader>onq', ':Obsidian new_from_template QuarterlyReviewTemplate<CR>', { desc = '[o]bsidian [n]ew [q]uarterly Review' })
