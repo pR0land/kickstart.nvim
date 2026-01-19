@@ -1,5 +1,7 @@
 local M = {}
 
+M.cutoff_hour = 3
+
 M.get_vault_root = function()
   if not Obsidian or not Obsidian.workspace then
     return nil
@@ -8,7 +10,7 @@ M.get_vault_root = function()
 end
 
 M.action_items_dir = function()
-  local root = get_vault_root()
+  local root = M.get_vault_root()
   if not root then
     return nil
   end
@@ -175,3 +177,5 @@ M.update_frontmatter_file = function(path, updates)
 
   vim.fn.writefile(out, path)
 end
+
+return M

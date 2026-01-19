@@ -1,8 +1,9 @@
 local M = {}
+
 M.cutoff_hour = 3
 M.overdue_threshold = 3
 
-local util = require 'utils'
+local util = require 'custom.plugins.obsidian.utils'
 
 M.pull_today = function()
   local buf = vim.api.nvim_get_current_buf()

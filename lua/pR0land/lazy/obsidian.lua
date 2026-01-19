@@ -201,6 +201,7 @@ return {
     require('obsidian').setup(opts)
 
     local tasks = require 'custom.plugins.obsidian.tasks'
+    local task_scheduler = require 'custom.plugins.obsidian.task_scedule'
     -- 2. Restore the Smart Action Autocmd
     vim.api.nvim_create_autocmd('User', {
       pattern = 'ObsidianNoteEnter',
@@ -211,6 +212,9 @@ return {
         vim.keymap.set('n', '<leader>otP', tasks.push_completed, { desc = '[o]bsidian [t]ask [P]ush' })
         vim.keymap.set('n', '<leader>ott', tasks.pull_tomorrow, { desc = '[o]bsidian [t]task [t]omorrow' })
         vim.keymap.set('n', '<leader>otr', tasks.push_priorities, { desc = '[o]bsidian [t]ask [r]eorder' })
+        vim.keymap.set('n', '<leader>ots', function()
+          task_scheduler.open()
+        end, { desc = '[o]bsidian [t]ask [s]chedule', noremap = true, silent = true })
       end,
     })
 
