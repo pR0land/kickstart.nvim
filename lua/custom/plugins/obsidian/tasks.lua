@@ -1,6 +1,4 @@
 local M = {}
-
-M.cutoff_hour = 3
 M.overdue_threshold = 3
 
 local util = require 'custom.plugins.obsidian.utils'
@@ -24,12 +22,13 @@ M.pull_today = function()
     local note = util.get_existing_note(file)
     if note then
       local fm = note:frontmatter() or {}
+      local display_title = fm.title or vim.fn.fnamemodify(file, ':t:r')
       if fm.Status == false and fm.Do_Date then
         local do_ts = util.parse_date(fm.Do_Date)
         if do_ts and do_ts <= today then
           table.insert(items, {
             filename = vim.fn.fnamemodify(file, ':t'),
-            title = vim.fn.fnamemodify(file, ':t:r'),
+            title = display_title,
             priority = tonumber(fm.Priority) or 99,
             projekt = fm.Projekt or '',
             do_ts = do_ts,
@@ -111,12 +110,13 @@ M.pull_tomorrow = function()
     local note = util.get_existing_note(file)
     if note then
       local fm = note:frontmatter() or {}
+      local display_title = fm.title or vim.fn.fnamemodify(file, ':t:r')
       if fm.Status == false and fm.Do_Date then
         local do_ts = util.parse_date(fm.Do_Date)
         if do_ts and do_ts <= tomorrow then
           table.insert(items, {
             filename = vim.fn.fnamemodify(file, ':t'),
-            title = vim.fn.fnamemodify(file, ':t:r'),
+            title = display_title,
             priority = tonumber(fm.Priority) or 99,
             projekt = fm.Projekt or '',
             do_ts = do_ts,
