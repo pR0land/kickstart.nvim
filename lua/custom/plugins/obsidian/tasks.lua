@@ -52,7 +52,8 @@ M.pull_today = function()
       suffix = (' — do: %s (%dd overdue)'):format(util.fmt_date_ddmmyyyy(it.do_ts), overdue)
     end
 
-    table.insert(out, string.format('- [ ] (P%d) [%s](%s) %s%s', it.priority, it.title, util.urlencode(it.filename), it.projekt, suffix))
+    local project_prefix = it.projekt == '' and '' or 'Projekt:'
+    table.insert(out, string.format('- [ ] (P%d) [%s](%s) %s %s %s', it.priority, it.title, util.urlencode(it.filename), project_prefix, it.projekt, suffix))
   end
 
   util.replace_block(buf, start, finish, out)
@@ -141,7 +142,8 @@ M.pull_tomorrow = function()
       suffix = (' — do: %s (%dd overdue)'):format(util.fmt_date_yyyymmdd(it.do_ts), overdue)
     end
 
-    table.insert(out, string.format('- (P#) [%s](%s) %s%s', it.title, util.urlencode(it.filename), it.projekt, suffix))
+    local project_prefix = it.projekt == '' and '' or 'Projekt:'
+    table.insert(out, string.format('- (P#) [%s](%s) %s %s', it.title, util.urlencode(it.filename), project_prefix, it.projekt, suffix))
   end
 
   util.replace_block(buf, start, finish, out)
