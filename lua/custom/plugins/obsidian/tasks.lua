@@ -37,9 +37,14 @@ M.pull_today = function()
       end
     end
   end
+
   table.sort(items, function(a, b)
     if a.priority == b.priority then
-      return a.do_ts < b.do_ts
+      if a.do_ts == nil or b.do_ts == nil then
+        return false
+      else
+        return a.do_ts < b.do_ts
+      end
     end
     return a.priority < b.priority
   end)
