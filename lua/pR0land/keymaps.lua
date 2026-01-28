@@ -21,9 +21,8 @@ end, { desc = '[t]oggle [l]anguage' })
 
 -- change colour of gruvboxtheme
 vim.keymap.set('n', '<leader>tcs', function()
-  vim.o.background = (vim.o.background == 'dark') and 'light' or 'dark'
-  vim.cmd 'colorscheme gruvbox'
-end, { desc = 'Toggle Gruvbox soft dark/light' })
+  require('custom.plugins.ui.background').toggle()
+end, { desc = 'Toggle Gruvbox dark/light' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })

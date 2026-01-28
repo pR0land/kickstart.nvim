@@ -43,6 +43,8 @@ return { -- You can easily change to a different colorscheme.
       contrast = 'soft',
       transparent_mode = false,
     }
+    local bg = require 'custom.plugins.ui.background'
+    bg.load()
     vim.cmd 'colorscheme gruvbox'
   end,
 }
