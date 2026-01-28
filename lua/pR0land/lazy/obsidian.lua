@@ -218,6 +218,9 @@ return {
       end,
     })
 
+    vim.keymap.set('n', '<leader>ogi', function()
+      require('custom.plugins.obsidian.inbox').pick_start()
+    end, { desc = '[o]bsidian [g]oThrough [i]nbox' })
     vim.keymap.set('n', '<Leader>os', ':Obsidian search<CR>', { desc = '[o]bsidian [s]earch file' })
     vim.keymap.set('n', '<Leader>od', ':Obsidian today<CR>', { desc = '[o]bsidian [d]aily note' })
     vim.keymap.set('n', '<Leader>nn', ':Obsidian new<CR>', { desc = '[n]ew [n]ote in obsidian' })
