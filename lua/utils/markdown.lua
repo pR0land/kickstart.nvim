@@ -24,6 +24,8 @@ function M.CurrentMONTH(offset)
   offset = offset or 1
   local dateTable = os.date '*t'
   if type(dateTable) == 'table' then
+    -- Set day to 1st to avoid overflow from months with 31 days
+    dateTable.day = 1
     dateTable.month = dateTable.month + offset
     local targetTime = os.time(dateTable)
     local result = os.date('%Y-%b', targetTime)
