@@ -22,13 +22,14 @@ end
 
 function M.CurrentMONTH(offset)
   offset = offset or 1
-  local year = tonumber(os.date '%Y')
-  local month = tonumber(os.date '%m') + offset
-  while month > 12 do
-    month = month - 12
-    year = year + 1
+  local dateTable = os.date '*t'
+  if type(dateTable) == 'table' then
+    dateTable.month = dateTable.month + offset
+    local targetTime = os.time(dateTable)
+    local result = os.date('%Y-%b', targetTime)
+    return tostring(result):lower()
   end
-  return string.format('%04d-%02d', year, month)
+  return ''
 end
 
 function M.CurrentQUARTER(offset)
