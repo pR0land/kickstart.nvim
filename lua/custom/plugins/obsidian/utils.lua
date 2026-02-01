@@ -89,24 +89,94 @@ M.get_existing_note = function(full_path)
   return Note.from_file(full_path)
 end
 
-M.get_marker_block = function(buf, start_marker, end_marker)
+M.get_marker_block = function(buf, mode, type_filter, start_line)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  local start_line, end_line
-
-  for i, l in ipairs(lines) do
-    if l:find(start_marker, 1, true) then
-      start_line = i
-    elseif l:find(end_marker, 1, true) then
-      end_line = i
-      break
-    end
-  end
-
-  if not start_line or not end_line or end_line <= start_line then
+  local total = #lines
+  if total == 0 then
     return nil
   end
-
-  return start_line, end_line - 1, lines
+  local cur = start_line or vim.api.nvim_win_get_cursor(0)[1]
+  if cur < 1 then
+    cur = 1
+  end
+  if cur > total then
+    cur = total
+  end
+  local function match_start(i)
+    return lines[i]:match '^<!%-%-%s*([%w%-]+):START%s*%-%->%s*$'
+  end
+  local function match_end(i, t)
+    local escaped_t = t:gsub('%-', '%%-')
+    return lines[i]:match('<!%-%-%s*' .. escaped_t .. ':END%s*%-%->')
+  end
+  do
+    local start_i, t
+    for i = cur, 1, -1 do
+      local mt = match_start(i)
+      if mt then
+        if not type_filter or mt == type_filter then
+          start_i = i
+          t = mt
+        end
+        break
+      end
+      if lines[i]:match ':END%s+%-%->$' then
+        break
+      end
+    end
+    if start_i and t then
+      for j = cur, total do
+        if match_end(j, t) then
+          return {
+            start = start_i,
+            finish = j,
+            type = t,
+            lines = lines,
+          }
+        end
+      end
+    end
+  end
+  local function scan_forward(from)
+    for i = from, total do
+      local t = match_start(i)
+      print(t)
+      if t and (not type_filter or t == type_filter) then
+        for j = i + 1, total do
+          if match_end(j, t) then
+            vim.notify('found marker' .. t)
+            return {
+              start = i,
+              finish = j,
+              type = t,
+              lines = lines,
+            }
+          end
+        end
+      end
+    end
+  end
+  local function scan_backward(from)
+    for i = from, 1, -1 do
+      local t = match_start(i)
+      if t and (not type_filter or t == type_filter) then
+        for j = i + 1, total do
+          if match_end(j, t) then
+            return {
+              start = i,
+              finish = j,
+              type = t,
+              lines = lines,
+            }
+          end
+        end
+      end
+    end
+  end
+  if mode == 'above' then
+    return scan_backward(cur)
+  end
+  return scan_forward(cur) or scan_forward(1)
 end
 
 M.replace_block = function(buf, start_line, end_line, new_lines)
