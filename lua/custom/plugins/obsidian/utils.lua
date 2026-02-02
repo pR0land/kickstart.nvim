@@ -144,7 +144,6 @@ M.get_marker_block = function(buf, mode, type_filter, start_line)
       if t and (not type_filter or t == type_filter) then
         for j = i + 1, total do
           if match_end(j, t) then
-            vim.notify('found marker' .. t)
             return {
               start = i,
               finish = j,
