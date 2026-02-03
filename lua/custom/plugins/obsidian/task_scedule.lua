@@ -12,7 +12,7 @@ local utils = require 'custom.plugins.obsidian.utils'
 
 -- Icons
 local ICON_WEEKDAY = '󰆍'
-local ICON_WEEKEND = ''
+local ICON_WEEKEND = ''
 
 local state = {
   win = nil,
