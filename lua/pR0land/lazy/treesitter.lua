@@ -19,9 +19,11 @@ return { -- Highlight, edit, and navigate code
       'javascript',
       'typescript',
       'c_sharp',
+      'latex',
     },
     -- Autoinstall languages that are not installed
     auto_install = true,
+    prefer_git = true,
     highlight = {
       enable = true,
       -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
