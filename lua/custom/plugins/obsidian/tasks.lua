@@ -87,7 +87,8 @@ local function collect_projekt_tasks(current_file, completed)
     if note then
       local fm = note:frontmatter() or {}
       if fm.Projekt then
-        local link_target = fm.Projekt:match '%((.-)%)'
+        local projekt_str = tostring(fm.Projekt)
+        local link_target = projekt_str:match '%((.-)%)'
         if link_target == current_name and fm.Status == completed then
           table.insert(items, {
             filename = vim.fn.fnamemodify(file, ':t'),
