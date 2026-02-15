@@ -89,6 +89,11 @@ local function collect_projekt_tasks(current_file, completed)
       if fm.Projekt then
         local projekt_str = tostring(fm.Projekt)
         local link_target = projekt_str:match '%((.-)%)'
+        if link_target then
+          link_target = link_target:gsub('%%(%x%x)', function(hex)
+            return string.char(tonumber(hex, 16))
+          end)
+        end
         if link_target == current_name and fm.Status == completed then
           table.insert(items, {
             filename = vim.fn.fnamemodify(file, ':t'),
