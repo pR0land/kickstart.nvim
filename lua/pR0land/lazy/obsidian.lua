@@ -77,9 +77,15 @@ return {
       date_format = '%d-%m-%Y',
       time_format = nil,
       substitutions = {
-        CurrentWEEK = md.CurrentWEEK(0),
-        CurrentMONTH = md.CurrentMONTH(0),
-        CurrentQUARTER = md.CurrentQUARTER(0),
+        CurrentWEEK = function()
+          return md.CurrentWEEK(0)
+        end,
+        CurrentMONTH = function()
+          return md.CurrentMONTH(0)
+        end,
+        CurrentQUARTER = function()
+          return md.CurrentQUARTER(0)
+        end,
       },
 
       ---@class obsidian.config.CustomTemplateOpts
