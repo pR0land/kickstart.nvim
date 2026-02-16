@@ -238,7 +238,6 @@ end
 
 M.task_pushers['PROJEKT-TODO'] = function(marker, dir)
   push_completed(marker, dir)
-  push_priorities(marker, dir)
 end
 
 M.push = function()
