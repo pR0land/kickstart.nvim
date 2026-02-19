@@ -90,6 +90,7 @@ local function collect_projekt_tasks(current_file, completed)
         local projekt_str = tostring(fm.Projekt)
         local link_target = projekt_str:match '%((.-)%)'
         if link_target then
+  -- Decode URL-encoded characters (like %20 to space)
           link_target = link_target:gsub('%%(%x%x)', function(hex)
             return string.char(tonumber(hex, 16))
           end)
