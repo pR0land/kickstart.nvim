@@ -258,6 +258,7 @@ return {
         'ts_ls',
         'texlab',
         'bibtex-tidy',
+        -- 'markdown_oxide',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
       require('mason-lspconfig').setup {
