@@ -284,15 +284,6 @@ function M.open()
   state.weeks = weeks
   state.week_map = week_map
 
-  local today_ts = os.time { year = os.date '%Y', month = os.date '%m', day = os.date '%d' }
-  state.week_index = 1
-  for i, ws in ipairs(weeks) do
-    if today_ts >= ws and today_ts <= ws + 6 * 86400 then
-      state.week_index = i
-      break
-    end
-  end
-
   state.sections = {}
   state.buf = vim.api.nvim_create_buf(false, true)
 
@@ -316,7 +307,9 @@ function M.open()
   render_week(state.buf, state.weeks[state.week_index], state.week_map[state.weeks[state.week_index]], state.sections)
   vim.bo[state.buf].modifiable = false
 
-  goto_section(1)
+  local wday = tonumber(os.date '%w')
+  local today_index = (wday == 0) and 7 or wday
+  goto_section(today_index)
 
   local map = function(lhs, fn)
     vim.keymap.set('n', lhs, fn, { buffer = state.buf, silent = true })
